@@ -11,10 +11,11 @@ namespace Project_FinchControl
     // Title: M3 Finch Control
     // Description: Starter solution with the helper methods,
     //              opening and closing screens, and the menu
+    //              to control the Finch robot 
     // Application Type: Console
-    // Author: Fink, Nikki
+    // Author: Fink, Nikki and starter from Velis, John
     // Dated Created: 2/15/2021
-    // Last Modified: 2/21/2021
+    // Last Modified: 2/25/2021
     //
     // **************************************************
 
@@ -91,13 +92,13 @@ namespace Project_FinchControl
                         break;
 
                     case "d":
-                           AlarmSystemDisplayMenuScreen(finchRobot);
+                        AlarmSystemDisplayMenuScreen(finchRobot);
 
                         break;
 
                     case "e":
                         UserProgrammingDisplayMenuScreen(finchRobot);
-            
+
                         break;
 
                     case "f":
@@ -143,9 +144,9 @@ namespace Project_FinchControl
                 // get user menu choice
                 //
                 Console.WriteLine("\ta) Light and Sound");
-                Console.WriteLine("\tb) Dance ");
+                Console.WriteLine("\tb) Dance..well Kinda ");
                 Console.WriteLine("\tc) Mixing It Up");
-                Console.WriteLine("\td) ");
+                Console.WriteLine("\td) Random");
                 Console.WriteLine("\tq) Main Menu");
                 Console.Write("\t\tEnter Choice:");
                 menuChoice = Console.ReadLine().ToLower();
@@ -170,7 +171,7 @@ namespace Project_FinchControl
                         break;
 
                     case "d":
-                        Console.WriteLine("Under construction. Come back later");
+                        UnderConstruction();
 
                         break;
 
@@ -231,7 +232,7 @@ namespace Project_FinchControl
             finchRobot.wait(800);
             finchRobot.noteOff();
             finchRobot.noteOn(784);
-            finchRobot.wait(200);
+            finchRobot.wait(800);
             finchRobot.noteOff();
             finchRobot.noteOn(784);
             finchRobot.wait(500);
@@ -240,54 +241,80 @@ namespace Project_FinchControl
             finchRobot.wait(500);
             finchRobot.noteOff();
             finchRobot.noteOn(784);
-            finchRobot.wait(1500);
+            finchRobot.wait(1000);
             finchRobot.noteOff();
             finchRobot.noteOn(988);
-            finchRobot.wait(200);
+            finchRobot.wait(800);
             finchRobot.noteOff();
             finchRobot.noteOn(1047);
             finchRobot.setLED(255, 0, 255);
-            finchRobot.wait(2000);
+            finchRobot.wait(800);
             finchRobot.noteOff();
             finchRobot.setLED(0, 0, 0);
 
+
             Console.WriteLine("\tWas that awesome or what? y/n");
-            lightAnswer = Console.ReadLine();
+            lightAnswer = Console.ReadLine().ToLower();
+            //    while (lightAnswer != "y" || lightAnswer != "n")
+            //    {
+            //        Console.WriteLine(" Please pick y or n");
+            //        Console.WriteLine();
+            //        lightAnswer = Console.ReadLine();
+
 
             if (lightAnswer == "y")
             {
-                Console.WriteLine("Yeah I thought so too");
-
+                Console.WriteLine(" Thanks I thought so too");
+                Console.WriteLine("Press any key to continue");
+                Console.ReadKey();
+            
             }
+
+
             else
             {
                 Console.WriteLine("Oh I'm sorry you did't like it. Lets do something else.");
-                Console.WriteLine("Do you want to turn on my lights? y/n");
-                morePlay = Console.ReadLine();
+                Console.WriteLine("Press an key to continue");
+                Console.ReadKey();
+            }
+
+            Console.WriteLine("Do you want to turn on my lights? y/n");
+            morePlay = Console.ReadLine().ToLower();
+            //  while (morePlay != "y" || morePlay != "n")
+           
 
 
-                if (morePlay == "y")
+            if (morePlay == "y")
 
-                {
-                    finchRobot.setLED(255, 255, 255);
-                    finchRobot.wait(2000);
-                    finchRobot.setLED(0, 0, 0);
-                    finchRobot.setLED(0, 255, 0);
-                    finchRobot.wait(3000);
-                    finchRobot.setLED(0, 0, 0);
-                }
-                else
-                {
-                    Console.WriteLine("ok no problem, lets move on.");
-                }
+            {
+                finchRobot.setLED(255, 255, 255);
+                finchRobot.wait(2000);
+                finchRobot.setLED(0, 0, 0);
+                finchRobot.setLED(255, 0, 0);
+                finchRobot.wait(2000);
+                finchRobot.setLED(0, 0, 0);
+                Console.WriteLine("ok ok I know not too impressive.");
+                Console.WriteLine("press an key to continue");
+                Console.ReadKey();
+            }
+
+
+            else
+            {
+                Console.WriteLine("Ok no problem, lets move on shall we.");
+                Console.WriteLine("Press an key to continue");
+                Console.ReadKey();
             }
 
 
 
+             DisplayContinuePrompt();
 
 
             DisplayMenuPrompt("Talent Show Menu");
-        }
+            
+            
+     }
 
 
         ///*******************************************************************
@@ -298,13 +325,14 @@ namespace Project_FinchControl
         static void TalentShowDisplayDance(Finch finchRobot)
         {
             string userMove;
-            bool quitDance = false;
+           // bool quit = false;
+            
 
             Console.CursorVisible = false;
 
             DisplayScreenHeader("Let's Move");
 
-            Console.WriteLine("\tThe Finch robot is about to move!");
+            Console.WriteLine("\tThis Finch robot is about to move! Look out!");
             DisplayContinuePrompt();
 
             // move
@@ -318,58 +346,45 @@ namespace Project_FinchControl
 
 
             Console.WriteLine("Well that wasn't anything special was it?");
+            Console.WriteLine();
             Console.WriteLine("Ok how about you move the robot a little.");
-            Console.WriteLine("Press 1 to move left or 2 to move right");
-            userMove = Console.ReadLine();
-            Console.WriteLine("I see you want to move" + userMove);
-
-
-            if (userMove == "1")
-            {
-                finchRobot.setMotors(0, 255);
-                finchRobot.wait(1000);
-                finchRobot.setMotors(0, 0);
-            }
-            else if (userMove == "2") 
-            {
-                finchRobot.setMotors(255,0);
-                finchRobot.wait(1000);
-                finchRobot.setMotors(0, 0);
-            }
-            else
-            {
-                Console.WriteLine("Enter valid number");
-            }
+            Console.WriteLine("Press L to move left or R to move right");
+            userMove = Console.ReadLine().ToLower();
             
             
-            
-            //maybe an or/else instead of a do? or remove do/while nope need if
+          //  do
+          //  {
+                switch (userMove)
+                {
+                    case "l": finchRobot.setMotors(0, 255);
+                        finchRobot.wait(4000);
+                        finchRobot.setMotors(0, 0);
+                        
+                        break;
+                        
+                  
+                    case "r": finchRobot.setMotors(255, 0);
+                        finchRobot.wait(4000);
+                        finchRobot.setMotors(0, 0);
+                        
 
-            //do
-            //{
-            //    switch (userMove)
-            //    {
-            //        case "1": finchRobot.setMotors(0, 255);
-            //            finchRobot.wait(4000);
-            //            finchRobot.setMotors(0, 0);
-            //            break;
-            //        case "2": finchRobot.setMotors(255, 0);
-            //            finchRobot.wait(4000);
-            //            finchRobot.setMotors(0, 0);
-
-            //            break;
-            //        case "": Console.WriteLine("Pick 1 or 2");
-            //            break;
-            //        default: quitDance = true;
-            //            break;
-
-
-            //    }
-
-            //} while (!quitDance);
+                       break;
+                    
+                      
+                    default:
+                        Console.WriteLine( "Enter L or R");
+                        DisplayContinuePrompt();
+                        break;
 
 
 
+                }
+
+
+            // } while(!quit);
+
+
+            Console.WriteLine("AAAnd thats's enough of that lol");
 
             DisplayMenuPrompt("Talent Show Menu");
         }
@@ -389,22 +404,26 @@ namespace Project_FinchControl
 
             // more for loops and commands for sing/dance
 
-            for (int mixValue = 0; mixValue < 200; mixValue++)
+            for (int mixValue = 0; mixValue < 100; mixValue++)
             {
                 finchRobot.setLED(mixValue, mixValue, mixValue);
                 finchRobot.wait(25);
             }
+            //hbday song
             finchRobot.noteOn(587);
             finchRobot.wait(500);
             finchRobot.noteOn(587);
             finchRobot.wait(500);
             finchRobot.noteOn(659);
-            finchRobot.wait(1000);
+            finchRobot.wait(500);
             finchRobot.noteOn(587);
             finchRobot.wait(1000);
             finchRobot.noteOn(740);
-            finchRobot.wait(1200);
+            finchRobot.wait(1000);
+            finchRobot.noteOn(880);
+            finchRobot.wait(1000);
 
+            finchRobot.setLED(255, 0, 0);
             finchRobot.noteOn(587);
             finchRobot.wait(500);
             finchRobot.noteOn(587);
@@ -417,6 +436,7 @@ namespace Project_FinchControl
             finchRobot.wait(1000);
             finchRobot.noteOn(784);
 
+            finchRobot.setLED(0, 255, 0);
             finchRobot.noteOn(587);
             finchRobot.wait(500);
             finchRobot.noteOn(587);
@@ -434,6 +454,7 @@ namespace Project_FinchControl
             finchRobot.noteOn(659);
             finchRobot.wait(1000);
 
+            finchRobot.setLED(0, 0, 255);
             finchRobot.noteOn(523);
             finchRobot.wait(500);
             finchRobot.noteOn(523);
@@ -445,11 +466,19 @@ namespace Project_FinchControl
             finchRobot.noteOn(880);
             finchRobot.wait(500);
             finchRobot.noteOn(784);
-            finchRobot.wait(3000);
+            finchRobot.wait(2000);
             finchRobot.noteOff();
+            finchRobot.setLED(0, 0, 0);
 
-            Console.WriteLine("That was fun");
+            finchRobot.setMotors(255, 255);
+            finchRobot.wait(2000);
+            finchRobot.setMotors(-255, -255);
+            finchRobot.wait(1000);
+            finchRobot.setMotors(255, 255);
+            finchRobot.wait(2000);
+            finchRobot.setMotors(0, 0);
 
+            Console.WriteLine("No more mixing it up, for now");
 
             DisplayMenuPrompt("Talent Show Menu");
         }
@@ -560,21 +589,18 @@ namespace Project_FinchControl
             finchRobot.noteOn(200);
             finchRobot.wait(400);
             finchRobot.noteOff();
-            Console.WriteLine("Pretty Lights");
+            Console.WriteLine(" OOOHH Pretty Lights");
             finchRobot.setLED(255, 0, 0);
             finchRobot.wait(500);
             finchRobot.setLED(0, 255, 0);
             finchRobot.wait(500);
             finchRobot.setLED(0, 0, 255);
+            finchRobot.setLED(0, 0, 0);
 
 
             DisplayMenuPrompt("Main Menu");
 
-            //
-            // reset finch robot
-            //
-            finchRobot.setLED(0, 0, 0);
-            finchRobot.noteOff();
+            
 
             return robotConnected;
         }
@@ -595,6 +621,8 @@ namespace Project_FinchControl
             Console.Clear();
             Console.WriteLine();
             Console.WriteLine("\t\tFinch Control");
+            Console.WriteLine();
+            Console.WriteLine("Hello and welcome to my Finch control App");
             Console.WriteLine();
 
             DisplayContinuePrompt();
@@ -656,6 +684,7 @@ namespace Project_FinchControl
             Console.WriteLine("Sorry this section is still under construction.");
             Console.WriteLine("Come back soon!");
             DisplayContinuePrompt();
+            Console.ReadLine();
 
         }
 
