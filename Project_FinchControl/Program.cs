@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using FinchAPI;
 
 namespace Project_FinchControl
@@ -14,8 +15,8 @@ namespace Project_FinchControl
     //              to control the Finch robot 
     // Application Type: Console
     // Author: Fink, Nikki and starter from Velis, John
-    // Dated Created: 2/15/2021
-    // Last Modified: 2/25/2021
+    // Dated Created: 02/15/2021
+    // Last Modified: 03/02/2021
     //
     // **************************************************
 
@@ -356,14 +357,16 @@ namespace Project_FinchControl
             //  {
             switch (userMove)
             {
-                case "l": finchRobot.setMotors(0, 255);
+                case "l":
+                    finchRobot.setMotors(0, 255);
                     finchRobot.wait(4000);
                     finchRobot.setMotors(0, 0);
 
                     break;
 
 
-                case "r": finchRobot.setMotors(255, 0);
+                case "r":
+                    finchRobot.setMotors(255, 0);
                     finchRobot.wait(4000);
                     finchRobot.setMotors(0, 0);
 
@@ -547,7 +550,7 @@ namespace Project_FinchControl
 
                     default:
                         Console.WriteLine();
-                        Console.WriteLine("\tPlease enter a letter for the menu choices provided.");
+                        Console.WriteLine("\tPlease enter a letter from the menu choices provided.");
                         DisplayContinuePrompt();
                         break;
                 }
@@ -580,11 +583,13 @@ namespace Project_FinchControl
             {
                 Console.WriteLine(
                 (index + 1).ToString().PadLeft(15) +
-                temperatures[index].ToString("n2").PadLeft(15)
+                temperatures[index].ToString("n2").PadLeft(15) 
                 );
-                //change to farenhhiet
+               
+                //change to farenhheit w method
             }
 
+            Console.WriteLine($"\t The Average Temperature is:{temperatures.Average()} Celsius");
 
             DisplayContinuePrompt();
         }
@@ -612,14 +617,23 @@ namespace Project_FinchControl
                 (index + 1).ToString().PadLeft(15) +
                 temperatures[index].ToString("n2").PadLeft(15)
                 );
-                //change to farenhhiet
+                //change to farenhheit w method
             }
+
+            Console.WriteLine($"\t The Average Temperature is:{temperatures.Average():n2} Celsius"); //simplified
         }
 
+        /// <summary>
+        /// get temperature data 
+        /// </summary>
+        /// <param name="numberOfDataPoints"></param>
+        /// <param name="dataPointFrequency"></param>
+        /// <param name="finchRobot"></param>
+        /// <returns>temperatures</returns>
+        /// 
         static double[] DataRecorderDisplayGetData(int numberOfDataPoints, double dataPointFrequency, Finch finchRobot)
         {
             double[] temperatures = new double[numberOfDataPoints];
-            double[] conversion = new double[numberOfDataPoints];
 
             DisplayScreenHeader("\tGet Data");
 
@@ -632,13 +646,14 @@ namespace Project_FinchControl
             for (int index = 0; index < numberOfDataPoints; index++)
             {
                 temperatures[index] = finchRobot.getTemperature();
-                Console.WriteLine($"\tReading {index + 1}: {temperatures[index].ToString("n2")}");
+                Console.WriteLine($"\tReading {index + 1}: {temperatures[index].ToString("n2")}");  //can be simplified
                 int waitInSeconds = (int)(dataPointFrequency * 1000);
                 finchRobot.wait(waitInSeconds);
 
-                conversion[index] = (int)((temperatures[index] * 1.8) + 32);
-                Console.WriteLine($"\t Temperature in Farenheit :{ conversion[index] + 1}");
 
+                Console.WriteLine($"\t Temperature in Farenheit :{ ConvertToFarenheit(temperatures[index])}");
+
+                // set to seperate method TempConversion..
             }
 
 
@@ -655,54 +670,49 @@ namespace Project_FinchControl
             return temperatures;
         }
 
-
-
+        /// <summary>
+        /// convert celsius to farenheit
+        /// </summary>
+        /// <param name="celsiusTemp"></param>
+        /// <returns>farenheit temperature</returns>
+        static double ConvertToFarenheit(double celsiusTemp)
+        {
+            return ((celsiusTemp * 1.8) + 32);
+        }
 
         /// <summary>
         /// get frequency of data points from user
         /// </summary>
-        /// <returns>frequency of data points</returns>
+        /// <returns>data point frequency</returns>
 
         static double DataRecorderDisplayGetDataPointFrequency()
         {
-            
+
             string userResponse;
-            bool validResponse;
+            bool validResponse = false;
+            double dataPointFrequency;
+
+            // validate...yess i did it
+            DisplayScreenHeader("\t Data Point Frequency");
+
             do
             {
-
-
-
-                DisplayScreenHeader("\t Data Point Frequency");
-
                 Console.Write("\tFrequency of Data Points (how often in seconds): ");
                 userResponse = Console.ReadLine();
-                //validate
 
-                validResponse = double.TryParse(userResponse, out double dataPointFrequency);
-                
+                validResponse = double.TryParse(userResponse, out dataPointFrequency);
+
                 if (!validResponse)
                 {
-                    Console.WriteLine("enter number");
-                    Console.WriteLine();
+                    Console.Write("\tPlease enter a proper number [1,2,3...]: ");
                 }
-                else
-                {
-                 
-                 DisplayContinuePrompt();
-                 
-                }
-                
-                return dataPointFrequency;
-                
-                
+
             } while (!validResponse);
 
-            
-               
-                
-            
-           
+            DisplayContinuePrompt();
+
+            return dataPointFrequency;
+
         }
         /// <summary>
         /// get number of data points 
@@ -711,54 +721,35 @@ namespace Project_FinchControl
 
         static int DataRecorderDisplayGetNumberOfDataPoints()
         {
-            bool validResponse ;
+            string useResponse;
+            bool validResponse = false;
+            int numberOfDataPoints;
+                
+            DisplayScreenHeader("\tNumber of Data Points");
+            
             do
-            {
-
-
-                int numberOfDataPoints;
-                string useResponse;
-                validResponse = false;
-
-                DisplayScreenHeader("\tNumber of Data Points");
+            {           
 
                 Console.Write("\tPlease Enter the Number of Data Points you want to record: ");
                 useResponse = Console.ReadLine();
-                //validate
 
-                int.TryParse(useResponse, out numberOfDataPoints);
-                if (!validResponse )
+                //validate...done
+
+                validResponse = int.TryParse(useResponse, out numberOfDataPoints);
+
+                if (!validResponse)
                 {
-                    
-
-
-
-                }
-                DisplayContinuePrompt();
-
-                return numberOfDataPoints;
+                    Console.Write("\tPlease Enter a proper number [1,2,3..]: ");
+                }    
                 
             } while (!validResponse);
 
-
-
-
-
-
-
-
-
-
                 DisplayContinuePrompt();
 
-               // return numberOfDataPoints;
+            return numberOfDataPoints;
         }
 
-
         #endregion
-
-
-
 
         #region Alarm system
 
@@ -767,22 +758,206 @@ namespace Project_FinchControl
         //****************************************
         static void AlarmSystemDisplayMenuScreen(Finch finchRobot)
         {
-            Console.CursorVisible = false;
 
-            DisplayScreenHeader("Alarm System");
-            Console.WriteLine("\tThis area is still under construction");
-            DisplayContinuePrompt();
+
+            Console.CursorVisible = true;
+
+            bool quitMenu = false;
+            string menuChoice;
+
+            string sensorsToMonitor = "";
+            string rangeType = "";
+            int minMaxThresholdValue = 0;
+            int timeToMonitor = 0;
+
+            do
+            {
+                DisplayScreenHeader("Alarm System Menu");
+
+                //
+                // get user menu choice
+                //
+                Console.WriteLine("\ta) Set Sensors to Monitor");
+                Console.WriteLine("\tb) Set Range Type");
+                Console.WriteLine("\tc) Set Minimum/Maximum Threshold Value");
+                Console.WriteLine("\td) Set Time to Monitor");
+                Console.WriteLine("\te) Set Alarm");
+                Console.WriteLine("\tq) Main Menu");
+                Console.Write("\t\tEnter Choice:");
+                menuChoice = Console.ReadLine().ToLower();
+
+                //
+                // process user menu choice
+                //
+                switch (menuChoice)
+                {
+                    case "a":
+                        sensorsToMonitor = LightAlarmDisplaySetSensorsToMonitors();
+
+                        break;
+
+                    case "b":
+                        rangeType = LightAlarmDisplaySetRangeType();
+
+                        break;
+
+                    case "c":
+                        minMaxThresholdValue = LightAlarmSetMinMaxThresholdValue(rangeType, finchRobot);
+
+                        break;
+
+                    case "d":
+                        timeToMonitor = LightAlarmSetTimeToMonitor();
+
+                        break;
+
+                    case "e":
+                        LightAlarmSetAlarm(finchRobot, sensorsToMonitor, rangeType, minMaxThresholdValue, timeToMonitor);
+
+                        break;
+
+
+                    case "q":
+                        quitMenu = true;
+                        break;
+
+                    default:
+                        Console.WriteLine();
+                        Console.WriteLine("\tPlease enter a letter from the menu choices provided.");
+                        DisplayContinuePrompt();
+                        break;
+                }
+
+            } while (!quitMenu);
+
+
+        }
+
+        /// <summary>
+        /// set alarm
+        /// </summary>
+        /// <param name="finchRobot"></param>
+        /// <param name="sensorsToMonitor"></param>
+        /// <param name="rangeType"></param>
+        /// <param name="minMaxThresholdValue"></param>
+        /// <param name="timeToMonitor"></param>
+        static void LightAlarmSetAlarm(
+            Finch finchRobot,
+            string sensorsToMonitor,
+            string rangeType,
+            int minMaxThresholdValue,
+            int timeToMonitor)
+        {
+            DisplayScreenHeader("Set Alarm");
+
+
+
+
+
+            DisplayMenuPrompt("Light Alarm");
+        }
+
+
+        /// <summary>
+        /// set time to monitor
+        /// </summary>
+        /// <returns> time To Monitor</returns>
+        static int LightAlarmSetTimeToMonitor()
+        {
+            int timeToMonitor;
+
+            DisplayScreenHeader("Time to Monitor");
+
+
+            //validate
+
+            Console.WriteLine($"\tTime to Monitor");
+            int.TryParse(Console.ReadLine(), out timeToMonitor);
+
+            //echo back value
+
+
+            DisplayMenuPrompt("Light Alarm");
+
+            return timeToMonitor;
+        }
+
+        /// <summary>
+        ///  get min/max threshold value
+        /// </summary>
+        /// <param name="rangeType"></param>
+        /// <param name="finchRobot"></param>
+        /// <returns>min/max threshold value</returns>
+        static int LightAlarmSetMinMaxThresholdValue(string rangeType, Finch finchRobot)
+        {
+            int minMaxThresholdValue;
+
+            DisplayScreenHeader("Minimum/Maximum Threshold Value");
+
+            Console.WriteLine($"\tLeft light sensor ambient value: {finchRobot.getLeftLightSensor()}");
+            Console.WriteLine($"\tRight light sensor ambient value: {finchRobot.getRightLightSensor()}");
+            Console.WriteLine();
+            //validate
+
+            Console.WriteLine($"\tEnter the {rangeType} light sensor value:");
+            int.TryParse(Console.ReadLine(), out minMaxThresholdValue);
+
+            //echo back value
+
+
+            DisplayMenuPrompt("Light Alarm");
+
+            return minMaxThresholdValue;
+        }
+
+
+        /// <summary>
+        /// select sensors to use
+        /// </summary>
+        /// <returns> sensors to monitor</returns>
+        static string LightAlarmDisplaySetSensorsToMonitors()
+        {
+            string sensorsToMonitor;
+
+            DisplayScreenHeader("Sensors to Monitor");
+
+            Console.Write("\tSensors to Monitor [left, right, both]");
+            sensorsToMonitor = Console.ReadLine();
+
+            //validate
+
+            DisplayMenuPrompt("Light Alarm");
+
+            return sensorsToMonitor;
+        }
+
+        /// <summary>
+        /// set Range min/max
+        /// </summary>
+        /// <returns>range type</returns>
+        static string LightAlarmDisplaySetRangeType()
+        {
+            string rangeType;
+
+            DisplayScreenHeader("Range Type");
+
+            Console.Write("\tRange Type [minimum, maximum]:");
+            rangeType = Console.ReadLine();
+
+            //validate
+
+            DisplayMenuPrompt("Light Alarm");
+
+            return rangeType;
         }
 
         #endregion
 
-
-
         #region User Programming
 
-       //***********************************************
-       //*          User Programming                    *
-       //************************************************
+        //***********************************************
+        //*          User Programming                    *
+        //************************************************
         static void UserProgrammingDisplayMenuScreen(Finch finchRobot)
         {
             Console.CursorVisible = false;
@@ -792,8 +967,6 @@ namespace Project_FinchControl
             DisplayContinuePrompt();
         }
         #endregion
-
-
 
         #region FINCH ROBOT MANAGEMENT
 
@@ -857,7 +1030,7 @@ namespace Project_FinchControl
 
             DisplayMenuPrompt("Main Menu");
 
-            
+
 
             return robotConnected;
         }
@@ -948,3 +1121,7 @@ namespace Project_FinchControl
         #endregion
     }
 }
+
+
+
+
