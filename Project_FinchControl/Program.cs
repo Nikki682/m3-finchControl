@@ -37,18 +37,16 @@ namespace Project_FinchControl
         LEDON,
         LEDOFF,
         GETTEMPERATURE,
-        //NOTEON,
-        //NOTEOFF,
-        //CRAZYCOMBO,
+        NOTEON,
+        NOTEOFF,
+        CRAZYCOMBO,
         DONE
     }
 
 
     class Program
     {
-        // first method run when the app starts up
-
-
+       
         static void Main(string[] args)
         {
             SetTheme();
@@ -85,9 +83,8 @@ namespace Project_FinchControl
             {
                 DisplayScreenHeader("Main Menu");
 
-                //
-                // get user menu choice
-                //
+                 // get user menu choice
+                
                 Console.WriteLine("\ta) Connect Finch Robot");
                 Console.WriteLine("\tb) Talent Show");
                 Console.WriteLine("\tc) Data Recorder");
@@ -99,9 +96,8 @@ namespace Project_FinchControl
                 Console.Write("\t\tEnter Choice:");
                 menuChoice = Console.ReadLine().ToLower();
 
-                //
                 // process user menu choice
-                //
+                
                 switch (menuChoice)
                 {
                     case "a":
@@ -961,7 +957,7 @@ namespace Project_FinchControl
             int timeToMonitor;  
 
             DisplayScreenHeader("Time to Monitor");
-            //validate...help?
+            //validate...
 
             do
             {
@@ -1003,7 +999,7 @@ namespace Project_FinchControl
 
             DisplayScreenHeader("Minimum/Maximum Threshold Value");
                     
-            //valid..done?
+            //valid..
 
             do
             {
@@ -1161,9 +1157,6 @@ namespace Project_FinchControl
                 switch (menuChoice)
                 {
 
-
-
-
                     case "a":
                         rangeType = TempAlarmDisplaySetRangeType();
 
@@ -1236,7 +1229,7 @@ namespace Project_FinchControl
             {
                 
                 currentTempSensorValue = finchRobot.getTemperature();
-                
+
 
                 switch (rangeType)
                 {
@@ -1255,8 +1248,7 @@ namespace Project_FinchControl
                         }
                         break;
 
-
-                }
+                }        
 
                 finchRobot.wait(1000);
                 secondsElapsed++;
@@ -1299,7 +1291,8 @@ namespace Project_FinchControl
 
                 if (!validResponse)
                 {
-                    Console.WriteLine("\t We need a time in seconds please [1,5,20]");
+                    Console.WriteLine("\tWe need a time in seconds please [1,5,20]");
+                    Console.WriteLine();
 
                 }
 
@@ -1344,6 +1337,7 @@ namespace Project_FinchControl
                 if (!validResponse)
                 {
                     Console.WriteLine("\tEnter the the threshold value in numbers[1, 36, 88]");
+                    Console.WriteLine();
                 }
 
 
@@ -1401,8 +1395,6 @@ namespace Project_FinchControl
 
         #endregion
 
-
-
         #region User Programming
 
         //***********************************************
@@ -1415,15 +1407,15 @@ namespace Project_FinchControl
             string menuChoice;
             bool quitMenu = false;
 
-            (int motorSpeed, int ledBrightness, double waitSeconds) comandParameters;  //add note and combo
+            (int motorSpeed, int ledBrightness, double waitSeconds, int note, int noteOff) comandParameters;   
             comandParameters.motorSpeed = 0;
             comandParameters.ledBrightness = 0;
             comandParameters.waitSeconds = 0;
-
+            comandParameters.note = 0;
+            comandParameters.noteOff = 0;
+            
             List<Command> commands = new List<Command>(); 
-            
-            
-
+                        
             do
             {
                 DisplayScreenHeader("User Programming Menu");
@@ -1490,13 +1482,14 @@ namespace Project_FinchControl
         private static void UserProgrammingDisplayExecuteFinchCommands(
             Finch finchRobot, 
             List<Command> commands, 
-            (int motorSpeed, int ledBrightness, double waitSeconds) commandParameters)  //ADD NOTEON, NOTEOFF, COMBO
+            (int motorSpeed, int ledBrightness, double waitSeconds, int note, int noteOff) commandParameters)  
 
         {
             int motorSpeed = commandParameters.motorSpeed;
             int ledBrightness = commandParameters.ledBrightness;
             int waitMilliSeconds = (int)(commandParameters.waitSeconds * 1000);
-            // int note = commandParameters.
+            int note = commandParameters.note;
+            int noteOff = commandParameters.noteOff;
             string commandFeedback = "";
             const int TURNING_MOTOR_SPEED = 100;
 
@@ -1556,38 +1549,48 @@ namespace Project_FinchControl
                         commandFeedback = $"Temperature; {finchRobot.getTemperature().ToString("n2")}\n";
                         break;
 
-                    //case Command.NOTEON:
-                    //finchRobot.noteOn(100)+
-                    //finchRobot.noteOn(200);
-                    //commandFeedback = Command.NOTEON.ToString();
+                    case Command.NOTEON:
+                        finchRobot.noteOn(100);
+                        finchRobot.noteOn(200);
+                        commandFeedback = Command.NOTEON.ToString();
+                        break;
 
-                    //case Command.NOTEOFF:
-                    // finchRobot.noteOff(0);
-                    //commandFeedback = Command.NOTEOFF.ToString();
+                    case Command.NOTEOFF:
+                        finchRobot.noteOn(0);
+                        commandFeedback = Command.NOTEOFF.ToString();
+                        break;
 
-                    //case Command.CRAZYCOMBO:
-                    //finchRobot.noteOn(100), finchRobot.NOTEON, Command.setLED(ledBrightness, ledBrightness, ledBrightness), Command.setMotors(motorSpeed, motorSpeed);
-                    //commandFeedback = Command.CRAZYCOMBO.ToString();
+                    case Command.CRAZYCOMBO:
+                       
+                        for (int crazy = 0; crazy < 255; crazy++)
+                        {
+                             finchRobot.setLED(crazy, crazy, crazy);
+                             finchRobot.noteOn(crazy * 25);
+                             finchRobot.wait(50);
+                             finchRobot.noteOff();
+                             finchRobot.setLED(0, 0, 0);
+                             finchRobot.setMotors(crazy, 0);
+                             finchRobot.wait(50);
+                             finchRobot.setMotors(0, 0);
+                        }
+                        commandFeedback = Command.CRAZYCOMBO.ToString();
+                        break;
 
                     case Command.DONE:
                          commandFeedback = Command.DONE.ToString();
                         break;
 
                     
-
                     default:
-                       
-                        break;
+                       break;
 
                 }
                      Console.WriteLine($"\t{commandFeedback}");
-               
-                                
+                                             
             }
                     DisplayMenuPrompt("User Programming");
 
         }
-
 
         /// <summary>
         /// ***************************************************************
@@ -1619,7 +1622,7 @@ namespace Project_FinchControl
 
             DisplayScreenHeader("Finch Robot Commands");
 
-            //  OR type out commands
+            //  OR I type out commands
 
             int commandCount = 1;
             Console.WriteLine("\tList of Available Commands");
@@ -1631,7 +1634,7 @@ namespace Project_FinchControl
                 if (commandCount % 5 == 0) Console.Write("-\n\t-");
                 commandCount++;
             }
-                //end of list of commands code block
+                //end of 'list of commands' code block
                 
             Console.WriteLine();
 
@@ -1647,6 +1650,7 @@ namespace Project_FinchControl
                 {
                     Console.WriteLine();
                     Console.WriteLine("\t\tYOU MUST ENTER A COMMAND FROM THE LIST ABOVE");
+                    Console.WriteLine();
                 }
             }
             
@@ -1671,26 +1675,24 @@ namespace Project_FinchControl
         ///********************************************************************************
         ///                             Get Command Parameters From User
         //*************************************************************************************
-        static (int motorSpeed, int ledBrightness, double waitSeconds) UserProgrammingDisplayGetCommandParameters()
+        static (int motorSpeed, int ledBrightness, double waitSeconds, int note, int noteOff) UserProgrammingDisplayGetCommandParameters()
         {
 
             DisplayScreenHeader("Command Parameters");
-
-           
-          
+                                 
                  string userResponse;
                  bool validResponse = false;
            
-                 (int motorSpeed, int ledBrightness, double waitSeconds ) commandParameters;
+                 (int motorSpeed, int ledBrightness, double waitSeconds, int note, int noteOff ) commandParameters;
                     commandParameters.motorSpeed = 0;
                     commandParameters.ledBrightness = 0;
                     commandParameters.waitSeconds = 0;
-                    //commandParameters.note = 0;
-                    //commandParameters.combo = 0;
+                    commandParameters.note = 0;
+                    commandParameters.noteOff = 0;
+                   
             do
             {   
-                
-                
+                                
                 Console.Write("\tEnter Motor Speed [1-255]:");
                 userResponse = Console.ReadLine();
 
@@ -1707,7 +1709,6 @@ namespace Project_FinchControl
 
             string userBrightness;
             bool validBrightness = false;
-
 
             do
             {
@@ -1730,8 +1731,9 @@ namespace Project_FinchControl
             
             do
             {
-                Console.Write("\tPlease enter a Wait Time in seconds");
+                Console.Write("\tPlease enter a Wait Time in seconds:");
                 userTime = Console.ReadLine();
+
                 validTime = double.TryParse(userTime, out commandParameters.waitSeconds);
 
                 if (!validTime)
@@ -1740,48 +1742,31 @@ namespace Project_FinchControl
                 }
 
             } while (!validTime);
-                //validate done
+            //validate done
 
-            // CHANGE TO NOTE AND COMBO
+            string userNote;
+            bool validNote;
 
-            //string userNote;
-            //bool validNote;
+            do
+            {
+                Console.Write("\tPlease enter Note frequency [50-1000]");
+                userNote = Console.ReadLine();
+                validNote = int.TryParse(userNote, out commandParameters.note);
 
-            //do
-            //{
-            //    Console.WriteLine("\tPlease enter Note frequency [50-1000]");
-            //    userTime = Console.ReadLine();
-            //    validTime = int.TryParse(userTime, out commandParameters.note);
+                if (!validNote)
+                {
+                    Console.WriteLine("\tYou MUST enter a number between 50-1000.");
+                }
 
-            //    if (!validNote)
-            //    {
-            //        Console.WriteLine("\tYou MUST enter a number between 50-1000.");
-            //    }
+            } while (!validNote);
 
-            //} while (!validNote);
-
-            //string userCombo;
-            //bool validCombo;
-
-            //do                dont think i need
-            //{
-            //    Console.WriteLine("\tPlease enter a Wait Time in seconds");
-            //    userTime = Console.ReadLine();
-            //    validTime = double.TryParse(userTime, out commandParameters.combo);
-
-            //    if (!validTime)
-            //    {
-            //        Console.WriteLine("\tYou MUST enter a time in seconds[1, 3, 4.5]");
-            //    }
-
-            //} while (!validTime);
-
+                        
             Console.WriteLine();
             Console.WriteLine("\t\tYou Entered:");
             Console.WriteLine($"\tMotor speed: {commandParameters.motorSpeed}");
             Console.WriteLine($"\tLed brightness: {commandParameters.ledBrightness}");
             Console.WriteLine($"\tWait command duration: {commandParameters.waitSeconds}");
-            //Console.WriteLine($"\tNote Fequency: {commandParameters.note}");
+            Console.WriteLine($"\tNote Frequency: {commandParameters.note}");
 
             DisplayMenuPrompt("User Programming");
 
@@ -1809,6 +1794,7 @@ namespace Project_FinchControl
             finchRobot.disConnect();
 
             Console.WriteLine("\tThe Finch robot is now disconnected.");
+            Console.WriteLine();
             Console.WriteLine("\t\tThanks for Playing with us today!");
 
             DisplayMenuPrompt("Main Menu");
@@ -1830,7 +1816,7 @@ namespace Project_FinchControl
             DisplayScreenHeader("Connect Finch Robot");
 
             Console.WriteLine("\tAbout to connect to Finch robot.");
-            Console.WriteLine("\t Please be sure the USB cable is connected to the robot and computer now.");
+            Console.WriteLine("\tPlease be sure the USB cable is connected to the robot and computer now.");
             DisplayContinuePrompt();
 
             robotConnected = finchRobot.connect();
@@ -1848,7 +1834,8 @@ namespace Project_FinchControl
             finchRobot.wait(500);
             finchRobot.setLED(0, 0, 255);
             finchRobot.setLED(0, 0, 0);
-            Console.WriteLine("\t Finch Now Connected");
+            Console.WriteLine();
+            Console.WriteLine("\tFinch Now Connected");
 
 
             DisplayMenuPrompt("Main Menu");
@@ -1904,7 +1891,7 @@ namespace Project_FinchControl
         static void DisplayContinuePrompt()
         {
             Console.WriteLine();
-            Console.WriteLine("\tPress any key to continue.");
+            Console.WriteLine("\tPlease press any key to continue.");
             Console.ReadKey();
         }
 
@@ -1929,8 +1916,7 @@ namespace Project_FinchControl
             Console.WriteLine();
         }
 
-        // area for methods
-
+       
         static void UnderConstruction()
         {
             Console.WriteLine();
