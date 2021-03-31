@@ -17,7 +17,7 @@ namespace Project_FinchControl
     // Application Type: Console
     // Author: Fink, Nikki and starter from Velis, John
     // Dated Created: 02/15/2021
-    // Last Modified: 03/02/2021
+    // Last Modified: 03/28/2021
     //
     // **************************************************
 
@@ -64,12 +64,16 @@ namespace Project_FinchControl
 
         static void SetTheme()
         {
-            //DataDisplaySetTheme();
+           
             Console.ForegroundColor = ConsoleColor.White;
             Console.BackgroundColor = ConsoleColor.DarkBlue;
         }
+
+        #region THEME
+
+        
         /// <summary>
-        /// 
+        /// Read data from user
         /// </summary>
         /// <returns>foregroundColor, backgroundColor</returns>
         static (ConsoleColor foregroundColor, ConsoleColor backgroundColor) ReadThemeData()
@@ -89,7 +93,7 @@ namespace Project_FinchControl
 
         }
         /// <summary>
-        /// 
+        /// write theme info to data file no vvalidation
         /// </summary>
         /// <param name="foreground"></param>
         /// <param name="background"></param>
@@ -129,6 +133,63 @@ namespace Project_FinchControl
             } while (!validColor);
 
             return consoleColor;
+        }
+
+        static string WriteThemeDataExceptions(ConsoleColor foreground, ConsoleColor background)
+        {
+            string dataPath = @"Data/Theme.txt";
+            string fileIOStatusMessage = "";
+
+            try
+            {
+                File.WriteAllText(dataPath, foreground.ToString() + "\n");
+                File.AppendAllText(dataPath, background.ToString());
+            }
+            catch (DirectoryNotFoundException)
+            {
+                fileIOStatusMessage = "I'm sorry, unable to locate data file folder.";                
+            }
+            catch (Exception)
+            {
+                fileIOStatusMessage = "I'm sorryn unable to write to data file";
+            }
+
+
+            return fileIOStatusMessage;
+        }
+
+        static (ConsoleColor foregroundColor, ConsoleColor backgroundColor)
+                ReadThemeDataExceptions(out string fileIOStatusMessage)
+        {
+            string dataPath = @"Data/Theme.txt";
+            string[] themeColors;
+
+            ConsoleColor foregroundColor = ConsoleColor.White;
+            ConsoleColor backgroundColor = ConsoleColor.Black;
+
+            try
+            {
+                themeColors = File.ReadAllLines(dataPath);
+                if (Enum.TryParse(themeColors[0], true, out foregroundColor) &&
+                    Enum.TryParse(themeColors[1], true, out backgroundColor)) 
+                {
+                    fileIOStatusMessage = "Complete";
+                }
+                else
+                {
+                    fileIOStatusMessage = "I'm sorry, data file formated incorrectly.";
+                }
+            }
+            catch (DirectoryNotFoundException)
+            {
+                fileIOStatusMessage = "I'm sorry, unable to locate data file folder";
+            }
+            catch (Exception)
+            {
+                fileIOStatusMessage = "I'm sorry , unable to read data file";
+            }
+
+            return (foregroundColor, backgroundColor);
         }
         /// <summary>
         /// Get theme data and display
@@ -176,12 +237,12 @@ namespace Project_FinchControl
 
             }
             DisplayContinuePrompt();
-        }   
+        }
+        #endregion
 
-        // private static void DisplayMainMenu()
-        //{
-        //    throw new NotImplementedException();
-        //}    
+        #region MAIN MENU
+
+        
 
         /// *****************************************************************
         /// *                     Main Menu                                 *
@@ -269,6 +330,7 @@ namespace Project_FinchControl
 
 
         }
+        #endregion
 
         private static void DisplayMainMenu()
         {
@@ -1524,7 +1586,7 @@ namespace Project_FinchControl
 
         #endregion
 
-        #region User Programming
+        #region USER PROGRAMMING
 
         //***********************************************
         //*          User Programming                    *
